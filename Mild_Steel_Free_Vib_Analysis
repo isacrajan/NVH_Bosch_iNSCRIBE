@@ -1,0 +1,94 @@
+finish
+/clear
+
+/PREP7  
+!*  
+ET,1,SHELL181   
+!*  
+!*  
+MPTEMP,,,,,,,,  
+MPTEMP,1,0  
+MPDATA,EX,1,,205e9
+MPDATA,EY,1,,205e9  
+MPDATA,EZ,1,,205e9  
+MPDATA,PRXY,1,,0.29
+MPDATA,PRYZ,1,,0.29
+MPDATA,PRXZ,1,,0.29
+MPDATA,GXY,1,,80e9 
+MPDATA,GYZ,1,,80e9 
+MPDATA,GXZ,1,,80e9 
+MPTEMP,,,,,,,,  
+MPTEMP,1,0  
+MPDATA,DENS,1,,7870
+sect,1,shell,,  
+secdata, 10e-3,1,0.0,3   
+secoffset,MID   
+seccontrol,,,, , , ,
+CYLIND,0.15, ,0,0.25,0,360,
+VDELE,       1  
+aplot   
+ADELE,       2 
+ADELE,       1
+FINISH  
+/SOL
+FINISH  
+/PREP7  
+MSHAPE,0,2D 
+MSHKEY,0
+!*  
+FLST,5,2,5,ORDE,2   
+FITEM,5,3   
+FITEM,5,-4  
+CM,_Y,AREA  
+ASEL, , , ,P51X 
+CM,_Y1,AREA 
+CHKMSH,'AREA'   
+CMSEL,S,_Y  
+!*  
+AMESH,_Y1   
+!*  
+CMDELE,_Y   
+CMDELE,_Y1  
+CMDELE,_Y2  
+!*  
+FLST,5,2,5,ORDE,2   
+FITEM,5,3   
+FITEM,5,-4  
+CM,_Y,AREA  
+ASEL, , , ,P51X 
+CM,_Y1,AREA 
+CMSEL,S,_Y  
+CMDELE,_Y   
+!*  
+!*  
+AREFINE,_Y1, , ,2,0,1,1 
+CMDELE,_Y1  
+!*  
+)/GOP 
+
+FINISH  
+/SOL
+FLST,2,8,4,ORDE,2   
+FITEM,2,1   
+FITEM,2,-8  
+!*  
+/GO 
+DL,P51X, ,ALL,  
+)/GOP  
+
+ANTYPE,2
+!*  
+!*  
+MODOPT,LANB,5  
+EQSLV,SPAR  
+MXPAND,0, , ,0  
+LUMPM,0 
+PSTRES,0
+!*  
+MODOPT,LANB,5,0,0, ,OFF
+/STATUS,SOLU
+SOLVE   
+FINISH  
+/POST1  
+SET,LIST
+)/GOP

@@ -1,0 +1,172 @@
+finish
+/clear
+nsubst=1000
+/PREP7  
+!*  
+ET,1,SHELL181   
+!*  
+!*  
+MPTEMP,,,,,,,,  
+MPTEMP,1,0  
+MPDATA,EX,1,,210e9 
+MPDATA,EY,1,,210e9  
+MPDATA,EZ,1,,210e9  
+MPDATA,PRXY,1,,0.3
+MPDATA,PRYZ,1,,0.3
+MPDATA,PRXZ,1,,0.3
+MPDATA,GXY,1,,80.77e9 
+MPDATA,GYZ,1,,80.77e9 
+MPDATA,GXZ,1,,80.77e9 
+MPTEMP,,,,,,,,  
+MPTEMP,1,0  
+MPDATA,DENS,1,,7850
+MPTEMP,,,,,,,,  
+MPTEMP,1,0  
+MPDATA,EX,2,,1.34e9
+MPDATA,EY,2,,1.34e9   
+MPDATA,EZ,2,,1.34e9  
+MPDATA,PRXY,2,,0.072 
+MPDATA,PRYZ,2,,0.072   
+MPDATA,PRXZ,2,,0.072 
+MPDATA,GXY,2,,6.25e8
+MPDATA,GYZ,2,,6.25e8 
+MPDATA,GXZ,2,,6.25e8  
+MPTEMP,,,,,,,,  
+MPTEMP,1,0  
+MPDATA,DENS,2,,1340 
+sect,1,shell,,  
+secdata, 2e-3,1,0.0,3   
+secdata, 6e-3,2,0.0,3
+secdata, 2e-3,1,0,3
+secoffset,MID   
+seccontrol,,,, , , ,
+CYLIND,0.15, ,0,0.25,0,360,
+VDELE,       1  
+aplot   
+ADELE,       2 
+ADELE,       1
+FINISH  
+/SOL
+FINISH  
+/PREP7  
+MSHAPE,0,2D 
+MSHKEY,0
+!*  
+FLST,5,2,5,ORDE,2   
+FITEM,5,3   
+FITEM,5,-4  
+CM,_Y,AREA  
+ASEL, , , ,P51X 
+CM,_Y1,AREA 
+CHKMSH,'AREA'   
+CMSEL,S,_Y  
+!*  
+AMESH,_Y1   
+!*  
+CMDELE,_Y   
+CMDELE,_Y1  
+CMDELE,_Y2  
+!*  
+FLST,5,2,5,ORDE,2   
+FITEM,5,3   
+FITEM,5,-4  
+CM,_Y,AREA  
+ASEL, , , ,P51X 
+CM,_Y1,AREA 
+CMSEL,S,_Y  
+CMDELE,_Y   
+!*  
+!*  
+AREFINE,_Y1, , ,2,0,1,1 
+CMDELE,_Y1  
+!*  
+)/GOP 
+
+FINISH  
+/SOL
+FLST,2,8,4,ORDE,2   
+FITEM,2,1   
+FITEM,2,-8  
+!*  
+/GO 
+DL,P51X, ,ALL,  
+)/GOP  
+
+finish
+/sol
+ANTYPE,2  
+MODOPT,LANB,13  
+EQSLV,SPAR  
+MXPAND,0, , ,0  
+LUMPM,0 
+PSTRES,0 
+MODOPT,LANB,13,0,0, ,OFF
+/STATUS,SOLU
+SOLVE   
+FINISH
+
+/SOLU   
+ANTYPE,3
+HROPT,FULL  
+HROUT,ON
+LUMPM,0 
+EQSLV, ,0,  
+PSTRES,1
+F,117,FY,1,
+HARFRQ,0,10000,   
+NSUBST,nsubst, 
+KBC,1   
+DMPRAT,0.1,! fdg
+ALLSEL,ALL  
+SOLVE   
+FINISH  
+ 
+NSEL,all
+NPLOT   
+ALLSEL,BELOW,NODE   
+*GET,NNODE,NODE,1,COUNT 
+*VGET,TESTARRY,NODE,NONODES,NLIST,,,,4 
+
+
+*DIM,ur,ARRAY,nnode,1,1, , ,
+*DIM,disp_resp,ARRAY,2*nsubst*nnode,1,1, , , 
+*DIM,vr,ARRAY,nnode,1,1, , ,
+*DIM,vr_sq,ARRAY,nnode,1,1, , ,
+*DIM,vrms,ARRAY,2*nsubst,1,1, , ,
+*DIM,VRMS_REAL,ARRAY,nsubst,1,1, , ,
+*DIM,VRMS_IMAG,ARRAY,nsubst,1,1, , ,
+*DIM,VRMS_ABS,ARRAY,nsubst,1,1, , ,
+/POST1
+*DO,q,1,2*nsubst,1
+*SET,V,0
+SET,,, ,,, ,q 
+*do,m,1,nnode,1 
+*GET,ur(m,1),NODE,TESTARRY(M),U,Y
+*SET,disp_resp((nnode*(q-1))+m,1),(ur(m,1))
+*enddo  
+
+
+SET, , ,velo, , , ,q,  
+*do,p,1,nnode,1 
+*GET,vr(p,1),NODE,TESTARRY(M),U,Y
+*SET,vr_sq(p,1),(vr(p,1))**2
+*SET,v,v+vr_sq(p,1) 
+*enddo  
+*SET,vrms(q,1),(v/nnode)**0.5   
+*enddo  
+
+*SET,s,1
+*do,t,1,2*nsubst,2
+*SET,VRMS_REAL(s,1),vrms(t,1)
+*SET,s,s+1
+*enddo
+
+*SET,ki,1
+*do,ji,2,2*nsubst,2
+*SET,VRMS_IMAG(ki,1),vrms(ji,1)
+*SET,ki,ki+1
+*enddo
+
+*do,ii,1,nsubst,1
+*SET,VRMS_ABS(ii,1),((VRMS_REAL(ii,1))**2+(VRMS_IMAG(ii,1))**2)**0.5
+*enddo 
